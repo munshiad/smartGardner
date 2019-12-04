@@ -7,6 +7,9 @@ from adafruit_htu21d import HTU21D  # humidity sensor library
 import adafruit_tsl2591  # light sensor library
 from adafruit_seesaw.seesaw import Seesaw  # soil moisture
 import adafruit_adxl34x  # accelerometer
+import RPi.GPIO as GPIO  # LED stuff
+
+status = "OK"
 
 def get_humidity():
     # Create library object using our Bus I2C port
@@ -40,11 +43,32 @@ def get_accelerometer():
     print(accelerometer.acceleration)
     return accelerometer.acceleration
 
+def get_status():
+    global status
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(18, GPIO.OUT)  # red led
+    GPIO.setup(23, GPIO.OUT)  # green led
+    # TODO: how to update status??
+    # TODO: change so not blocking????
+    if status == "OK":
+        GPIO.output(23, True)
+        time.sleep(2)
+        GPIO.output(23, False)
+    else:
+        GPIO.output(18, True)
+        time.sleep(2)
+        GPIO.output(18, False)
+
 def server():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('', 80))
     s.listen(5)
     print("server running")
+
+    URI = "mongodb://am5113:IoTFabulous!!!@cluster0-shard-00-00-faxh9.mongodb.net:27017,cluster0-shard-00-01-faxh9.mongodb.net:27017,cluster0-shard-00-02-faxh9.mongodb.net:27017/smartGardner?ssl=true&ssl_cert_reqs=CERT_NONE&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority"
+    client = pymongo.MongoClient(URI)
+    db = client.smartGardner
 
     while True :
         conn, addr = s.accept()
@@ -62,8 +86,17 @@ def server():
             elif "soil" in command:
                 response["soil"] = get_soil()
             # TODO: change to an alert if accelerometer changes or something
-            elif accelerometer in command:
+            elif "accelerometer" in command:
                 response["accelerometer"] = get_accelerometer()
+            elif "staus" in command:
+
+                response["humidity"] = get_humidity()
+                response["light"] = get_light()
+                response["soil"] = get_soil()
+                response["accelerometer"] = get_accelerometer()
+                get_status()
+                # put on database
+                db.smartGardner.insert_one(response)
             else:
                 pass
 

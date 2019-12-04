@@ -2,6 +2,7 @@
 import board  # circuit python stuff
 import busio  # circuit python stuff
 import adafruit_tsl2591  # sensor library
+from time import sleep
 
 i2c = busio.I2C(board.SCL, board.SDA)
 sensor = adafruit_tsl2591.TSL2591(i2c)
