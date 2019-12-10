@@ -3,8 +3,7 @@ import pymongo
 import gridfs
 import datetime
 
-def capture_image():
-    # try:
+try:
 
     # take picture
     filename = subprocess.check_output(["./camera.sh"], universal_newlines=True)
@@ -40,6 +39,7 @@ def capture_image():
     output.write(outputdata)
     # close the output file
     output.close()
+    print("[capture] OK")
 
-    # except Exception as e:
-    #     print(e)
+except Exception as e:
+    print("[capture] " + str(e))
