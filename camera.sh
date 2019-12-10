@@ -14,7 +14,7 @@ DELAY=0
 while [[ $F < $FRAMES ]]; do
   F=$(($F + 1))
   DIR="camera/"
-  IMAGE="$(date +"%Y-%m-%d_%H:%M:%S").jpg"
+  IMAGE="image.jpg"
   fswebcam -q -r $RES --no-banner $DIR$IMAGE
   if [[ $DELAY > 0 ]]; then
     sleep $DELAY
