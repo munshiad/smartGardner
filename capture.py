@@ -1,9 +1,10 @@
-aimport subprocess
+import subprocess
 import pymongo
 import gridfs
 import datetime
 from bson import ObjectId
 import time
+
 
 i = 1
 def capture_image():
