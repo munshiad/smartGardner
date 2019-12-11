@@ -1,13 +1,15 @@
 import socket
 import json
+from time import sleep
+from board import SCL, SDA  # Circuit Python
+import busio  # Circuit Python
+from adafruit_htu21d import HTU21D  # humidity sensor library
+import adafruit_tsl2591  # light sensor library
+from adafruit_seesaw.seesaw import Seesaw  # soil moisture
+import adafruit_adxl34x  # accelerometer
+import RPi.GPIO as GPIO  # LED stuff
 import pymongo
-from datetime import datetime, timedelta
-import get_sensor_data as sensor_data
 
-status = "OK"
-# cron job for image capture: 0 1,13 * * * rm /var/www/*/somedir/index.php > /home/someuser/cronlogs/some.log 2>&1  is for 1AM and 1PM
-# for us: 0 7,19 * * * python3 ___________________ > /home/someuser/cronlogs/some.log 2>&1  is for 7AM and 7PM
-#def server():
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('', 80))
 s.listen(5)
@@ -25,33 +27,31 @@ while True :
     #print(request)
 
     #request = json.loads(request)
-    
+
     print(request)
     #command = request.get("Command")  # TODO: make consistent on android side
     command = request
     response = {}
     #command = "humidity"
-    if "humidity" in command:
-        response["humidity"] = sensor_data.get_humidity()
+    if "status" in command:
+
+        response["humidity"] = get_humidity()
+        response["light"] = get_light()
+        response["soil"] = get_soil()
+        response["accelerometer"] = get_accelerometer()
+        get_status()
+    elif "humidity" in command:
+        response["humidity"] = get_humidity()
     elif "light" in command:
-        response["light"] = sensor_data.get_light()
+        response["light"] = get_light()
     elif "soil" in command:
-        response["soil"] = sensor_data.get_soil()
+        response["soil"] = get_soil()
     # TODO: change to an alert if accelerometer changes or something
     elif "accelerometer" in command:
-        response["accelerometer"] = sensor_data.get_accelerometer()
-    elif "status" in command:
-
-        response["humidity"] = sensor_data.get_humidity()
-        response["light"] = sensor_data.get_light()
-        response["soil"] = sensor_data.get_soil()
-        response["accelerometer"] = sensor_data.get_accelerometer()
-        sensor_data.get_status()
-        # put on database
+        response["accelerometer"] = get_accelerometer()
     else:
         response["other"] = "Not a valid command!"
     response = json.dumps(response)
-    #db.smartGardner.insert_one(response)
 
     conn.send(b'HTTP/1.0 200 OK\n')
     conn.send(b'Content-Type: text/html\n')
@@ -73,4 +73,4 @@ while True :
 
 
 
-#server()
+server()

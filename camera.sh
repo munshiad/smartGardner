@@ -19,5 +19,5 @@ while [[ $F < $FRAMES ]]; do
   if [[ $DELAY > 0 ]]; then
     sleep $DELAY
   fi
-  echo $IMAGE
+  echo $DIR$IMAGE
 done
