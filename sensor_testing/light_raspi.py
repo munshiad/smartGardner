@@ -12,3 +12,5 @@ while True:
     print('Light: {0}lux'.format(sensor.lux))
     print('Visible: {0}'.format(sensor.visible))
     print('Infrared: {0}'.format(sensor.infrared))
+    print('Full_spectrum: {0}'.format(sensor.full_spectrum))
+    print('Raw luminosity: {0}'.format(sensor.raw_luminosity))

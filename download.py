@@ -27,3 +27,4 @@ def get_picture(stored):
     #     print(e)
 #get_picture('5df0182efd10e576b8b5ba19')
 #get_picture('5df019d76c33443dbe72aeb2')
+get_picture('5df067b0f7dee01bf6ff9dbf')

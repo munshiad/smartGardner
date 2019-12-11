@@ -27,9 +27,12 @@ def get_light():
     # print('Light: {0}lux'.format(sensor.lux))
     # print('Visible: {0}'.format(sensor.visible))
     # print('Infrared: {0}'.format(sensor.infrared))
+    result = {}
     result["light"] = sensor.lux
     result["visible"] = sensor.visible
     result["infrared"] = sensor.infrared
+    result["full_spectrum"] = sensor.full_spectrum
+    result["raw_luminosity"] = sensor.raw_luminosity
     print(result)
     return result
 
@@ -43,11 +46,24 @@ def get_soil():
     print("Soil moisture: {0}".format(touch))
     return touch
 
+def get_temp():
+    i2c_bus = busio.I2C(SCL, SDA)
+    ss = Seesaw(i2c_bus, addr=0x36)
+    # read temperature from the temperature sensor
+    temp = ss.get_temp()
+    print("Temperature: {0}".format(temp))
+    return round(temp, 2)
+
 def get_accelerometer():
     i2c = busio.I2C(SCL, SDA)
     accelerometer = adafruit_adxl34x.ADXL345(i2c)
-    print(accelerometer.acceleration)
-    return accelerometer.acceleration
+    acc = accelerometer.acceleration
+    print(acc)
+    result = {}
+    result["z"] = round(acc[0], 2)
+    result["x"] = round(acc[1], 2)
+    result["y"] = round(acc[2], 2)
+    return result
 
 def get_status():
     status = "OK"  #TODO: change
@@ -67,13 +83,12 @@ def get_status():
         GPIO.output(18, False)
 
 while True:
-    #response = {}
-    #response["date"] = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    #response["humidity"] = get_humidity()
-    #response["light"] = get_light()
-    #response["soil"] = get_soil()
-    #response["accelerometer"] = get_accelerometer()
-    #db.smartGardner.insert_one(response)
-    #sleep(120)
-    get_accelerometer()
-    sleep(2)
+    response = {}
+    response["date"] = datetime.datetime.now()
+    response["humidity"] = get_humidity()
+    response["light"] = get_light()
+    response["soil"] = get_soil()
+    response["temp"] = get_temp()
+    response["accelerometer"] = get_accelerometer()
+    db.smartGardner.insert_one(response)
+    sleep(120)
