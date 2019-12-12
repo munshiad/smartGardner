@@ -4,9 +4,9 @@ import time
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(18, GPIO.OUT)  # red led
-GPIO.setup(25, GPIO.OUT)  # red led
-GPIO.setup(23, GPIO.OUT)  # yellow led
-GPIO.setup(24, GPIO.OUT)  # yellow led
+GPIO.setup(25, GPIO.OUT)  # green led
+GPIO.setup(23, GPIO.OUT)  # blue led
+GPIO.setup(24, GPIO.OUT)  # buzzer
 GPIO.setup(12, GPIO.OUT)  # yellow led
 
 
@@ -15,13 +15,13 @@ i = 1
 while True:
     print(str(i%5))
     if (i % 5 == 0):
-        print('green on')
+        print('red on')
         GPIO.output(18, True)
         time.sleep(1)
         GPIO.output(18, False)
         time.sleep(1)
     elif(i % 5 == 1):
-        print('red on')
+        print('green on')
         GPIO.output(25, True)
         time.sleep(1)
         GPIO.output(25, False)
@@ -45,4 +45,3 @@ while True:
         GPIO.output(24, False)
         time.sleep(1)
     i += 1
-
